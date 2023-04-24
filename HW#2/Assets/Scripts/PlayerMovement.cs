@@ -34,7 +34,7 @@ public class PlayerMovement : MonoBehaviour
 
 
         // Move the player
-        Vector3 movement = new Vector3(moveHorizontal, 0f, moveVertical) * speed * Time.deltaTime;
+        Vector3 movement = new Vector3(moveHorizontal, 0f, moveVertical).normalized * speed * Time.deltaTime;
         rb.MovePosition(transform.position + movement);
 
 
