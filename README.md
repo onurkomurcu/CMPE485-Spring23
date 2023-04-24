@@ -23,7 +23,7 @@ https://user-images.githubusercontent.com/92719802/234101937-f8fc72a2-1151-47cd-
 #### Notes : 
 - There are another way to escape. There is one extra floor above the current floor. There is only 1 door and key is also compatible with this door. However, only 1 door is compatible with key in the current floor. Bounciness of the floor is high because of this. 
 - Controller behave little bit different to increase difficulty of the game.
-
+- Sound of the game cannot be heared in the video because of the file size limit.
 
 
 
