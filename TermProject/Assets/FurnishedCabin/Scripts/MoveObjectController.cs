@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class MoveObjectController : MonoBehaviour 
 {
@@ -8,8 +9,8 @@ public class MoveObjectController : MonoBehaviour
 	private Animator anim;
 	private Camera fpsCam;
 	private GameObject player;
-
 	private const string animBoolName = "isOpen_Obj_";
+	private PlayerMove playerMove;
 
 	private bool playerEntered;
 	private bool showInteractMsg;
@@ -23,6 +24,11 @@ public class MoveObjectController : MonoBehaviour
 	{
 		//Initialize moveDrawController if script is enabled.
 		player = GameObject.FindGameObjectWithTag("Player");
+		if (player == null)
+		{
+			Debug.LogError("A GameObject tagged 'Player' is missing.");
+		}
+		playerMove = player.GetComponent<PlayerMove>();
 
 		fpsCam = Camera.main;
 		if (fpsCam == null)	//a reference to Camera is required for rayasts
@@ -78,12 +84,44 @@ public class MoveObjectController : MonoBehaviour
 			{
 				MoveableObject moveableObject = null;
 				//is the object of the collider player is looking at the same as me?
+				// if hit.collider name is prf_key_01
+				if (hit.collider.name == "prf_key_01")
+				{
+					msg = "Pick up the bedroom key.";
+					if (Input.GetKeyDown(KeyCode.E))
+					{
+						playerMove.haveBedroomKey = true;
+						Destroy(hit.collider.gameObject);
+						return;
+					}
+				}
+				else if (hit.collider.name == "prf_key_02")
+				{
+					msg = "Pick up the bathroom key.";
+					if (Input.GetKeyDown(KeyCode.E))
+					{
+						playerMove.haveBathroomKey = true;
+						Destroy(hit.collider.gameObject);
+						return;
+					}
+				}
+				else if (hit.collider.name == "prf_key_03")
+				{
+					msg = "Pick up the house key.";
+					if (Input.GetKeyDown(KeyCode.E))
+					{
+						playerMove.haveHouseKey = true;
+						Destroy(hit.collider.gameObject);
+						return;
+					}
+				}
+
 				if (!isEqualToParent(hit.collider, out moveableObject))
 				{	//it's not so return;
 					return;
 				}
-				//print moveable object
-				Debug.Log(moveableObject.name);
+
+
 
 				if (moveableObject != null)		//hit object must have MoveableDraw script attached
 				{
@@ -91,8 +129,27 @@ public class MoveObjectController : MonoBehaviour
 					string animBoolNameNum = animBoolName + moveableObject.objectNumber.ToString();
 
 					bool isOpen = anim.GetBool(animBoolNameNum);	//need current state for message.
-					msg = getGuiMsg(isOpen);
 
+					// if moveableObject is PFB_DoorSingle_Open PFB_DoorDouble or PFB_DoorSingle_Open (1)
+					// then check if player has key
+					if (moveableObject.gameObject.name== "PFB_DoorSingle_Open" && playerMove.haveBedroomKey == false)
+					{
+						msg = "You need a key to open this door.";
+						return;
+					}
+					else if (moveableObject.gameObject.name  == "PFB_DoorSingle_Open (1)" && playerMove.haveBathroomKey == false)
+					{
+						msg = "You need a key to open this door.";
+						return;
+					}
+					else if (moveableObject.gameObject.name  == "PFB_DoorDouble" && playerMove.haveHouseKey == false)
+					{
+						msg = "You need a key to open this door.";
+						return;
+					}
+
+
+					msg = getGuiMsg(isOpen);
 					if (Input.GetKeyUp(KeyCode.E) || Input.GetButtonDown("Fire1"))
 					{
 						anim.enabled = true;
@@ -175,6 +232,12 @@ public class MoveObjectController : MonoBehaviour
 
 	void OnGUI()
 	{
+		float dotSize = 3f;
+        float screenWidth = Screen.width;
+        float screenHeight = Screen.height;
+
+        GUI.DrawTexture(new Rect(screenWidth / 2 - dotSize / 2, screenHeight / 2 - dotSize / 2, dotSize, dotSize), Texture2D.whiteTexture, ScaleMode.StretchToFill, true, 0, Color.red, 0, 0);
+   
 		if (showInteractMsg)  //show on-screen prompts to user for guide.
 		{
 			GUI.Label(new Rect (50,Screen.height - 50,200,50), msg,guiStyle);

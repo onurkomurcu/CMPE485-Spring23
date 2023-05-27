@@ -9,6 +9,9 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private string verticalInputName = "Vertical";
 
     [SerializeField] private float movementSpeed = 2f;
+    [SerializeField] public bool haveBedroomKey = false;
+    [SerializeField] public bool haveBathroomKey = false;
+    [SerializeField] public bool haveHouseKey = false;
 
     private CharacterController charController;
 
